@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Mapa con Snazzy Maps</title>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    #titulo-mapa {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 10px 15px;
+      font-size: 26px;
+      font-weight: bold;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      z-index: 9999;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="titulo-mapa">Cum Laura</div>
+<div id="map"></div>
+
+<script>
+  // Estilo Snazzy Maps
+  const snazzyStyle = [
+    {
+  "featureType": "all",
+  "elementType": "labels.icon",
+  "stylers": [
+    { "saturation": -100 },
+    { "lightness": 0 },
+    { "color": "#777777" }
+  ]
+    },
+    {
+      "featureType": "all",
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        { "color": "transparent" }
+      ]
+    },
+    {
+        "featureType": "all",
+        "elementType": "all",
+        "stylers": [{"visibility": "on"}]
+    },
+    {
+        "featureType": "all",
+        "elementType": "geometry",
+        "stylers": [{"color": "#ffffff"},{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "all",
+        "elementType": "geometry.fill",
+        "stylers": [{"visibility": "off"},{"hue": "#0017ff"}]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "all",
+        "stylers": [{"visibility": "on"}]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "labels.text.fill",
+        "stylers": [{"color": "#444444"}]
+    },
+    {
+        "featureType": "administrative.neighborhood",
+        "elementType": "all",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "administrative.land_parcel",
+        "elementType": "all",
+        "stylers": [{"visibility": "on"}]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "all",
+        "stylers": [{"color": "#f2f2f2"},{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "geometry",
+        "stylers": [{"color": "#ffffff"}]
+    },
+    {
+        "featureType": "landscape.natural",
+        "elementType": "all",
+        "stylers": [{"visibility": "on"},{"lightness": "39"},{"weight": "0.56"},{"color": "#ffffff"}]
+    },
+    {
+        "featureType": "landscape.natural.landcover",
+        "elementType": "all",
+        "stylers": [{"visibility": "on"},{"hue": "#ff0000"}]
+    },
+    {
+        "featureType": "landscape.natural.terrain",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"},{"color": "#ab4040"}]
+    },
+    {
+      "featureType": "poi",
+      "elementType": "all",
+      "stylers": [{"visibility": "on"}]
+    },
+    {
+      "featureType": "poi",
+      "elementType": "labels.text.fill",
+      "stylers": [{"color": "#333333"}]
+    },
+
+    {
+        "featureType": "poi.attraction",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.attraction",
+        "elementType": "labels",
+        "stylers": [{"visibility": "on"}]
+    },
+   
+    {
+        "featureType": "poi.government",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.government",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "poi.medical",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.medical",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "poi.park",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.park",
+        "elementType": "labels",
+        "stylers": [{"visibility": "on"}]
+    },
+    {
+        "featureType": "poi.place_of_worship",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.place_of_worship",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "poi.school",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.school",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "poi.sports_complex",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "poi.sports_complex",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+      "featureType": "poi.landmark",
+      "stylers": [{ "visibility": "on" }]
+    },
+    {
+        "featureType": "road",
+        "elementType": "all",
+        "stylers": [{"saturation": -100},{"lightness": 45},{"color": "#b5c1b8"},{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels",
+        "stylers": [{"visibility": "on"}]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "labels",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "labels.icon",
+        "stylers": [{"visibility": "off"}]
+    },{
+      "featureType": "road",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        { "color": "#777777" }   // gris suave
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        { "color": "#ffffff" }   // sin contorno
+      ]
+    },
+    {
+        "featureType": "transit",
+        "elementType": "all",
+        "stylers": [{"visibility": "off"}]
+    },
+    {
+        "featureType": "water",
+        "elementType": "all",
+        "stylers": [{"color": "#8fc7cc"},{"visibility": "on"}]
+    }
+  ];
+
+function initMap() {
+  const center = { lat: 39.4699, lng: -0.3763 }; // Valencia
+
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 13,
+    center: center,
+    styles: snazzyStyle,
+    mapTypeControl: false,
+    streetViewControl: false
+  });
+
+  // ============================
+  //   FUNCIÓN PARA AJUSTAR TAMAÑO
+  // ============================
+  function getIconSize(zoom) {
+    if (zoom >= 15) return new google.maps.Size(40, 40);
+    if (zoom >= 10) return new google.maps.Size(30, 30);
+    return new google.maps.Size(20, 20);
+  }
+
+  // ============================
+  //   LISTA DE MARCADORES (con distrito asignado)
+  // ============================
+  const puntos = [
+    {
+      pos: { lat: 39.46623830927613, lng: -0.32717669994229864 },
+      distrito: "Poblats Maritims",
+      pass: "cafe123",
+      texto: "<b>Esmorzar</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/1691/1691169.png"
+    },
+    {
+      pos: { lat: 39.46979905614449, lng: -0.37645504895104615 },
+      distrito: "Ciutat Vella",
+      pass: "parque456",
+      texto: "<b>Free tour</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/3367/3367803.png"
+    },
+    {
+      pos: { lat: 39.310931628189664, lng: -0.3177179530158952 },
+      distrito: "POBLATS DEL SUD",
+      pass: "secreto789",
+      texto: "<b>Paella</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/4900/4900592.png"
+    },
+    {
+      pos: { lat: 39.319592151305805, lng: -0.3187507459290857 },
+      distrito: "POBLATS DEL SUD",
+      pass: "secreto789",
+      texto: "<b>Passeig en barca</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/436/436829.png"
+    },
+    {
+      pos: { lat: 39.50879051616455, lng: -0.406914574310684 },
+      distrito: "CAMPANAR",
+      pass: "secreto789",
+      texto: "<b>Truc</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/2218/2218458.png"
+    },
+    {
+      pos: { lat: 39.47384028708589, lng: -0.3700458803106052 },
+      distrito: "Extramurs",
+      pass: "secreto789",
+      texto: "<b>Exposició Sorolla</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/3874/3874596.png"
+    },
+    {
+      pos: { lat: 39.45639662178577, lng: -0.39042939296641194 },
+      distrito: "Patraix",
+      pass: "secreto789",
+      texto: "<b>València - Real Madrid</b>",
+      icono: "https://cdn-icons-png.flaticon.com/512/802/802619.png"
+    }
+  ];
+
+  const marcadores = [];
+  const etiquetasBarrios = [];
+
+
+  // ============================
+  //   CREAR MARCADORES (ocultos al inicio)
+  // ============================
+  puntos.forEach(p => {
+    const marker = new google.maps.Marker({
+      position: p.pos,
+      map: null, // oculto al inicio
+      icon: {
+        url: p.icono,
+        scaledSize: getIconSize(map.getZoom())
+      }
+    });
+
+    const info = new google.maps.InfoWindow({
+      content: p.texto
+    });
+
+    marker.addListener("click", () => {
+      
+
+      
+        info.open(map, marker);
+
+    });
+
+    marcadores.push({ marker, icono: p.icono, distrito: p.distrito });
+  });
+
+  // ============================
+  //   ACTUALIZAR ICONOS AL ZOOM
+  // ============================
+  map.addListener("zoom_changed", () => {
+    const zoom = map.getZoom();
+    marcadores.forEach(obj => {
+      obj.marker.setIcon({
+        url: obj.icono,
+        scaledSize: getIconSize(zoom)
+      });
+    });
+  });
+
+
+// ============================================================
+//   DISTRITOS DE VALENCIA (GEOJSON OFICIAL)
+// ============================================================
+
+map.data.loadGeoJson(
+  "https://valencia.opendatasoft.com/api/v2/catalog/datasets/districtes-distritos/exports/geojson"
+);
+
+// Barrios (añadido igual que al principio de la conversación)
+map.data.loadGeoJson( "https://valencia.opendatasoft.com/api/v2/catalog/datasets/barris-barrios/exports/geojson" );
+
+// Estilo inicial: gris
+map.data.setStyle(feature => {
+  const esBarrio = feature.getProperty("NOM_BARRI");
+
+  if (esBarrio) {
+    return {
+      fillOpacity: 0,          // SIN FONDO
+      strokeColor: "#888888",
+      strokeWeight: 1,
+      visible: true
+    };
+  }
+
+  // Distritos (igual que antes)
+  return {
+    fillColor: "#bbbbbb",
+    fillOpacity: 0.20,
+    strokeColor: "#888888",
+    strokeWeight: 1
+  };
+});
+
+
+
+
+
+// ============================
+//   GRUPOS DE DISTRITOS
+// ============================
+
+const grupos = {
+  "POBLATS MARITIMS": {
+    distritos: ["POBLATS MARITIMS"],
+    pass: "c",
+    color: "#A1C4FD",
+    desbloqueado: false
+  },
+
+  "CIUTAT VELLA": {
+    distritos: ["CIUTAT VELLA"],
+    pass: "c",
+    color: "#FAADA6",
+    desbloqueado: false
+  },
+
+  "VALENCIA SUD": {
+    distritos: [
+      "CAMINS AL GRAU",
+      "QUATRE CARRERES",
+      "JESUS",
+      "PATRAIX",
+      "L'OLIVERETA"
+    ],
+    pass: "c",
+    color: "#FFCFA1",
+    desbloqueado: false
+  },
+
+  "POBLES DEL SUD": {
+    distritos: ["POBLATS DEL SUD"],
+    pass: "c",
+    color: "#B6EEA7",
+    desbloqueado: false
+  },
+
+  "VALENCIA NORD": {
+    distritos: [
+      "CAMPANAR",
+      "POBLATS DE L'OEST",
+      "BENICALAP",
+      "RASCANYA",
+      "BENIMACLET",
+      "ALGIROS",
+      "POBLATS DEL NORD"
+    ],
+    pass: "c",
+    color: "#D5BCFE",
+    desbloqueado: false
+  },
+
+  "EXTRAMURS": {
+    distritos: [
+      "EXTRAMURS",
+      "L'EIXAMPLE",
+      "EL PLA DEL REAL",
+      "LA SAIDIA"
+    ],
+    pass: "c",
+    color: "#FFF699",
+    desbloqueado: false
+  }
+};
+
+function obtenerGrupoPorDistrito(nombreDistrito) {
+  for (const grupo in grupos) {
+    if (grupos[grupo].distritos.includes(nombreDistrito)) {
+      return grupo;
+    }
+  }
+  return null;
+}
+
+
+const infoDistrito = new google.maps.InfoWindow();
+
+map.data.addListener("click", event => {
+  const nombre =
+    (event.feature.getProperty("nom") ||
+     event.feature.getProperty("nombre") ||
+     "").trim().toUpperCase();
+
+  const grupo = obtenerGrupoPorDistrito(nombre);
+  if (!grupo) return;
+
+  const datosGrupo = grupos[grupo];
+
+  // Si ya está desbloqueado → no pedir contraseña
+  if (datosGrupo.desbloqueado) return;
+
+  const pass = prompt(`Introdueix la contrasenya per a desbloquejar ${grupo}`);
+
+  if (pass !== datosGrupo.pass) {
+    alert("Contrasenya incorrecta");
+    return;
+  }
+
+  // 🔓 Marcar grupo como desbloqueado
+  datosGrupo.desbloqueado = true;
+
+  // 🎨 Colorear TODOS los distritos del grupo
+  map.data.forEach(feature => {
+    const nombreDistrito =
+      (feature.getProperty("nom") ||
+       feature.getProperty("nombre") ||
+       "").trim().toUpperCase();
+
+    if (datosGrupo.distritos.includes(nombreDistrito)) {
+      map.data.overrideStyle(feature, {
+        fillColor: datosGrupo.color,
+        fillOpacity: 0.45,
+        strokeColor: "#888888",
+        strokeWeight: 1
+      });
+    }
+  });
+
+  // 📍 Mostrar marcadores del grupo
+  marcadores.forEach(obj => {
+    if (datosGrupo.distritos.includes(obj.distrito.toUpperCase())) {
+      obj.marker.setMap(map);
+    }
+  });
+
+  infoDistrito.setContent(`<b>${grupo}</b><br>Zona desbloquejada`);
+  infoDistrito.setPosition(event.latLng);
+  infoDistrito.open(map);
+});
+
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCeXuKrliSC2lt_S6XPxxJliLzXB9_zrJ8&callback=initMap&language=ca" async defer></script>
+
+</body>
+</html>
