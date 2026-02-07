@@ -266,6 +266,7 @@ function initMap() {
   //   FUNCIÓN PARA AJUSTAR TAMAÑO
   // ============================
   function getIconSize(zoom) {
+    if (zoom >= 10) return new google.maps.Size(60, 60);
     if (zoom >= 15) return new google.maps.Size(50, 50);
     if (zoom >= 10) return new google.maps.Size(40, 40);
     return new google.maps.Size(20, 20);
